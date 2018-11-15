@@ -7,5 +7,5 @@ HASAN OKTAY EKİCİ,
 GÖKÇE EZEROĞLU
 
 Have a look to to Project Proposal
-([Link](https://mef-bda503.github.io/gpj18-voltran/voltran.html) 
+([Link](https://mef-bda503.github.io/gpj18-voltran/voltran.html))
 
