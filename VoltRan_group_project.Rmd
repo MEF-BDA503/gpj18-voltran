@@ -1,0 +1,43 @@
+---
+title: "VoltRan_group_project"
+output: html_document
+---
+
+##  ODD 2016-2018 Car Sales Analysis  
+###  Tarık Özçelik
+###  25.11.2018
+```{r message = FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+library(readxl)
+```
+
+### get excel filefrom local
+  Below the excel file is downloaded from github to a local data frame (raw_data) and refined for analysis
+```{r}
+#download file 
+project_raw_data <- read_excel("voltran_dataset.xlsx")
+glimpse(project_raw_data)
+dim(project_raw_data)
+```
+
+### total sales by city
+```{r}
+sales_by_city <- 
+        project_raw_data %>% 
+        group_by(CITY) %>% 
+        summarise(total_sales=sum(SALES)) %>% 
+        arrange(desc(total_sales)) %>%
+        slice(1:20)
+glimpse(sales_by_city)
+#x = reorder(brand_name, - brand_total_auto 
+sales_by_city %>% 
+                  ggplot(aes(x=reorder(CITY,total_sales), y=total_sales, colour=CITY )) + 
+                  geom_bar(stat="identity")+
+                  coord_flip()+
+                  labs( x="CITY" , y = "Total sales")+
+                  ggtitle("total sales based on city") +
+                  theme(legend.position = "none", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 1))
+```
