@@ -1,0 +1,117 @@
+---
+title: "VoltRan_group_project"
+output: html_document
+---
+
+##   Sales Analysis  
+###  voltRan
+###  25.11.2018
+```{r message = FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+library(readxl)
+library(lubridate)
+```
+
+### get excel filefrom local
+  Below the excel file is downloaded from github to a local data frame (raw_data) and refined for analysis
+```{r}
+project_raw_data <- read_excel("voltran_dataset.xlsx")
+glimpse(project_raw_data)
+dim(project_raw_data)
+```
+
+### total sales by city
+```{r}
+sales_by_city <- 
+        project_raw_data %>% 
+        group_by(CITY) %>% 
+        summarise(total_sales=sum(SALES)) %>% 
+        arrange(desc(total_sales)) %>%
+        slice(1:20)
+
+glimpse(sales_by_city)
+
+sales_by_city %>% 
+                  ggplot(aes(x=reorder(CITY,total_sales), y=total_sales, colour=CITY )) + 
+                  geom_bar(stat="identity")+
+                  coord_flip()+
+                  labs( x="CITY" , y = "Total sales")+
+                  ggtitle("total sales based on city") +
+                  theme(legend.position = "none", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 1))
+```
+
+### total sales by sales representative segment
+```{r}
+sales_by_CS <- 
+        project_raw_data %>% 
+        group_by(Customer_SEGMENT) %>% 
+        summarise(total_sales=sum(SALES)) %>% 
+        arrange(desc(total_sales))
+
+glimpse(sales_by_CS)
+
+sales_by_CS %>% 
+        ggplot(aes(x=Customer_SEGMENT, y=total_sales, colour=Customer_SEGMENT )) + 
+        geom_bar(stat="identity")+
+        labs( x="Customer Segment" , y = "Total sales")+
+        ggtitle("total sales based on Sales Representative Segment") +
+        theme(legend.position = "none", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 10))
+```
+
+
+### sales performance per day of week
+```{r}
+sales_per_day <-
+        project_raw_data %>% 
+        select(INVOICE_DATE,SALES) %>%
+        mutate(INVOICE_DATE2=lubridate::as_date(dmy(INVOICE_DATE))) %>%
+        mutate(weekday=weekdays(INVOICE_DATE2)) %>%
+        group_by(weekday) %>%
+        summarise(avg_sale=mean(SALES))
+  
+glimpse(sales_per_day)
+
+sales_per_day %>% 
+        ggplot(aes(x="",y=avg_sale, fill=weekday )) + 
+        geom_bar(stat="identity")+
+        coord_polar("y",start = 0)
+```
+
+### correlation between system entry date and loyalty(LOA)
+```{r}
+corr_LOA_Dur <-
+        project_raw_data %>% 
+        select(`FIRST ORDER`,LOA) %>%
+        mutate(fOrder=lubridate::as_date(dmy(`FIRST ORDER`),"%Y-%m-%d")) %>%
+        mutate(dayCount=as.numeric(as.Date(strptime("2018-11-25", "%Y-%m-%d"))-as.Date(strptime(`FIRST ORDER`, "%d/%m/%Y")))) %>%
+        group_by(LOA) %>%
+        summarise(avgDur=mean(dayCount)/7)
+
+glimpse(corr_LOA_Dur)
+
+corr_LOA_Dur %>% 
+        ggplot(aes(x=LOA, y=avgDur,colour=LOA )) + 
+        geom_point()
+```
+
+### loyalty sales correlation
+```{r}
+sales_by_LOA <- 
+              project_raw_data %>% 
+              filter(BUSINESS=="BEAUTY") %>% 
+              group_by(LOA,Customer_SEGMENT) %>% 
+              summarise(total_sales=sum(SALES)) %>% 
+              arrange(LOA)
+
+glimpse(sales_by_LOA)
+
+sales_by_LOA %>% 
+              ggplot(aes(x=LOA, y=total_sales,colour=Customer_SEGMENT )) + 
+              geom_point()+
+              labs( x="LOA" , y = "Total sales")+
+              ggtitle("total sales of loyalty number per segment of representative segment") 
+
+```
