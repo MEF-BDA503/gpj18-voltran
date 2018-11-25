@@ -12,6 +12,6 @@ voltRan's project will be based on the analyses of sales figures of an FMCG comp
 
 Please [click here](https://mef-bda503.github.io/gpj18-voltran/voltran.html) for more information about our project.
 
-## Project Version1
+## First Analysis
 Please [click here](https://mef-bda503.github.io/gpj18-voltran/VoltRan_group_project.html) for our first analysis. 
 
