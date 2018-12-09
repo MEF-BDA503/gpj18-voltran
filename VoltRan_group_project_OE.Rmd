@@ -1,0 +1,125 @@
+---
+title: "VoltRan_group_project"
+output: html_document
+---
+
+##   Sales Analysis  
+###  voltRan
+###  25.11.2018
+```{r message = FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+library(readxl)
+library(lubridate)
+library(treemapify) 
+library(magrittr)
+```
+
+### get excel filefrom local
+  Below the excel file is downloaded from github to a local data frame (raw_data) and refined for analysis
+```{r}
+project_raw_data <- read_excel("sales_data_v10.xlsx")
+project_raw_data$SALES <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$SALES)))
+project_raw_data$UNIT_PRICE <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$UNIT_PRICE)))
+glimpse(project_raw_data)
+dim(project_raw_data)
+```
+
+### ajldgflkegfletg
+```{r}
+sales_by_acc_loa <- 
+  project_raw_data %>% 
+  select(ACCOUNTNUM, LOA,Customer_Segment,SALES,BUSINESS) %>%
+  group_by(ACCOUNTNUM, LOA,Customer_Segment,BUSINESS) %>% 
+  summarise(total_sales=sum(SALES))
+
+glimpse(sales_by_acc_loa)
+
+total_sales_by_segment_bus <- 
+  sales_by_acc_loa %>% 
+  group_by(Customer_Segment, BUSINESS) %>% 
+  summarise(total_segment_bus_sales=sum(total_sales))
+
+total_sales_by_segment_bus %>% 
+        ggplot(aes(x=Customer_Segment, y=total_segment_bus_sales, fill=BUSINESS )) + 
+        geom_bar(stat="identity")+
+        labs( x="Customer Segment" , y = "Total sales")+
+        ggtitle("total sales based on Sales Representative Segment") +
+        theme(legend.position = "bottom", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 10))
+
+avg_sales_by_segment_bus <- 
+  sales_by_acc_loa %>% 
+  group_by(Customer_Segment, BUSINESS) %>% 
+  summarise(total_segment_bus_sales=mean(total_sales))
+
+avg_sales_by_segment_bus %>% 
+        ggplot(aes(x=Customer_Segment, y=total_segment_bus_sales, fill=BUSINESS )) + 
+        geom_bar(stat="identity")+
+        labs( x="Customer Segment" , y = "Average Sales")+
+        ggtitle("average sales based on Sales Representative Segment") +
+        theme(legend.position = "bottom", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 10))
+
+```
+
+
+### total sales by city
+```{r}
+sales_by_city <- 
+        project_raw_data %>% 
+        group_by(CITY) %>% 
+        summarise(total_sales=sum(SALES)) %>% 
+        arrange(desc(total_sales)) %>%
+        slice(1:20)
+
+glimpse(sales_by_city)
+
+sales_by_city %>% 
+                  ggplot(aes(x=reorder(CITY,total_sales), y=total_sales, fill=CITY )) + 
+                  geom_bar(stat="identity")+
+                  coord_flip()+
+                  labs( x="CITY" , y = "Total sales")+
+                  ggtitle("total sales based on city") +
+                  theme(legend.position = "none", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 1))
+```
+
+### sales performance per day of week
+```{r}
+sales_per_day <-
+        project_raw_data %>% 
+        select(INVOICE_DATE,SALES) %>%
+        mutate(INVOICE_DATE2=lubridate::as_date(ymd(INVOICE_DATE))) %>%
+        mutate(weekday=weekdays(INVOICE_DATE2)) %>%
+        group_by(weekday) %>%
+        summarise(avg_sale=mean(SALES))  %>%
+        mutate(day_order=c(5,6,3,7,1,4,2)) %>%
+        arrange(day_order)
+
+glimpse(sales_per_day)
+
+sales_per_day %>%
+        ggplot(aes(x="",y=avg_sale, fill=reorder(weekday,day_order))) + 
+        geom_bar(stat="identity")+
+        coord_polar("y",start = 0)+
+        theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank())
+```
+
+#Tree Map of Categorized Business Sales
+```{r}
+
+categorized_sales <-
+  project_raw_data %>% 
+  select(CATEGORY_, SALES) %>%
+  group_by(CATEGORY_) %>%
+  summarise(SALES = sum(SALES)) 
+
+ggplot(categorized_sales, aes(area = SALES, fill = CATEGORY_, label = CATEGORY_)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "italic", colour = "white", place = "centre", grow = TRUE)+
+  theme(legend.position = "bottom") 
+```
+
+
