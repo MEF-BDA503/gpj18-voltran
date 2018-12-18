@@ -1,7 +1,8 @@
 ---
 title: "VoltRan_group_project"
-output: html_document
-
+output:
+  html_document: default
+  pdf_document: default
 ---
 ## Introduction
 
@@ -29,14 +30,14 @@ INVOICE DATE
 # Analysis-Necessary Packages
   
 ```{r message = FALSE}
-library(dplyr)
-library(tidyverse)
-library(ggplot2)
-library(scales)
-library(readxl)
-library(lubridate)
-library(treemapify) 
-library(magrittr)
+library(dplyr)                                #[1]
+library(tidyverse)                            #[2]
+library(ggplot2)                              #[3]
+library(scales)                               #[4]
+library(readxl)                               #[5]
+library(lubridate)                            #[6]
+library(treemapify)                           #[7]
+library(magrittr)                             #[8]
 ```
 
 
@@ -166,6 +167,40 @@ ggplot(categorized_sales, aes(area = SALES, fill = CATEGORY_, label = CATEGORY_)
   geom_treemap_text(fontface = "italic", colour = "white", place = "centre", grow = TRUE)+
   theme(legend.position = "bottom") 
 ```
+
+
+
+##  CITIATIONS:
+[1]Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2018). dplyr:
+  A Grammar of Data Manipulation. R package version 0.7.7.
+  https://CRAN.R-project.org/package=dplyr
+
+[2]Hadley Wickham (2017). tidyverse: Easily Install and Load the 'Tidyverse'. R
+  package version 1.2.1. https://CRAN.R-project.org/package=tidyverse
+
+[3]H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New
+  York, 2016.
+  
+[4]Hadley Wickham (2018). scales: Scale Functions for Visualization. R package
+  version 1.0.0. https://CRAN.R-project.org/package=scale
+  
+[5] Hadley Wickham and Jennifer Bryan (2018). readxl: Read Excel Files. R package
+  version 1.1.0. https: //CRAN.R-project.org/package=readxl 
+  
+[6]Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with
+  lubridate. Journal of Statistical Software, 40(3), 1-25. URL
+  http://www.jstatsoft.org/v40/i03/
+  
+[7]David Wilkins (2018). treemapify: Draw Treemaps in 'ggplot2'. R package
+  version 2.5.2. https://CRAN.R-project.org/package=treemapify
+
+[8]Stefan Milton Bache and Hadley Wickham (2014). magrittr: A Forward-Pipe
+  Operator for R. R package version 1.5.
+  https://CRAN.R-project.org/package=magrittr
+
+
+```
+
 
 
 
