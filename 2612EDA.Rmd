@@ -49,7 +49,7 @@ There are <b>15 variables</b> and <b>494.305 observations</b> to be conducted.
 </p>
 
 ```{r, echo = FALSE}
-project_raw_data <- read_excel("C:\\Users\\oktay\\OneDrive\\Masaüstü\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\sales_data_v10.xlsx")
+project_raw_data <- read_excel("C:\\Users\\oktay\\OneDrive\\MasaÃ¼stÃ¼\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\sales_data_v10.xlsx")
 project_raw_data$SALES <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$SALES)))
 project_raw_data$UNIT_PRICE <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$UNIT_PRICE)))
 glimpse(project_raw_data)
@@ -139,7 +139,7 @@ In  the fourth graph, the sales density can be red from the map. The reddish the
 
 ```{r, echo = FALSE}
 total <- read.csv(
-  "C:\\Users\\oktay\\OneDrive\\Masaüstü\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\final_map.csv",sep = ",",
+  "C:\\Users\\oktay\\OneDrive\\MasaÃ¼stÃ¼\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\final_map.csv",sep = ",",
   colClasses=c("group"="factor"))
 
 ggplot(total)+geom_polygon( aes(x = long, y = lat, group = group, 
@@ -212,7 +212,7 @@ ggplot(categorized_sales, aes(area = SALES, fill = CATEGORY_, label = CATEGORY_)
 ---
 
 ##  CITIATIONS:
-[1]Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2018). dplyr:
+[1]Hadley Wickham, Romain FranÃ§ois, Lionel Henry and Kirill MÃ¼ller (2018). dplyr:
   A Grammar of Data Manipulation. R package version 0.7.7.<br>
   https://CRAN.R-project.org/package=dplyr
 
