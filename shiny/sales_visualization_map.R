@@ -21,7 +21,7 @@ TUR@data %>% as_tibble() %>% head(10)
 TUR_for <- fortify(TUR)
 # character function
 turkceden_ingilizceye <- function(dataset){
-  turkce_harfler<- c("Ç","Þ","Ð","Ý","Ü","Ö","ç","þ","ð","ý","ü","ö")
+  turkce_harfler<- c("Ã‡","Ãž","Ã","Ã","Ãœ","Ã–","Ã§","Ã¾","Ã°","Ã½","Ã¼","Ã¶")
   ingilizce_harfler<- c("C","S","G","I","U","O","c","s","g","i","u","o")
   dataset=mgsub(turkce_harfler,ingilizce_harfler,dataset)
   return(dataset)
