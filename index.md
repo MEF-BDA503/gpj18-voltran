@@ -15,7 +15,15 @@ Please [click here](https://mef-bda503.github.io/gpj18-voltran/voltran.html) for
 ## First Analysis
 Please [click here](https://mef-bda503.github.io/gpj18-voltran/VoltRan_group_project.html) for our first analysis.
 
-## Explanatory Analysis
-Please [click here](https://mef-bda503.github.io/gpj18-voltran/VoltRan_group_project_final.html) for our first analysis and  [click here](https://mef-bda503.github.io/gpj18-voltran/shiny_map.R) to reach the Shiny Map.
+## Explanatory Data Analysis
+For our first analysis [click here](https://mef-bda503.github.io/gpj18-voltran/archive/VoltRan_group_project_final.html).
 
-trial [click here] (https://mef-bda503.github.io/gpj18-voltran/Final_Knit.html)
+For final analysis [click here](https://mef-bda503.github.io/gpj18-voltran/2612EDAh.html).
+
+For final analysis PDF [click here](https://mef-bda503.github.io/gpj18-voltran/2612EDAp.pdf).
+
+For presentation [click here](https://mef-bda503.github.io/gpj18-voltran/2612EDAs.html).
+
+For Shiny Map please [Click here](https://mef-bda503.github.io/gpj18-voltran/shiny/shiny_map.R) to reach the Shiny Map.
+
+
