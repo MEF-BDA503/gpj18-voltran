@@ -1,0 +1,245 @@
+---
+title: "VoltRan"
+author: "Kerim Acar, Oktay Ekici, Ã–mer ElmasrÄ±, GÃ¶kÃ§e EzeroÄŸlu, TarÄ±k Ã–zÃ§elik"
+date: "26.12.2018"
+output: html_document
+---
+
+```{r setup}
+```
+## Key Takeaways
+- We performed analyses on an FMCG company sales data.
+- Main analyses were made on sales figures of categories, cities and segments.
+- What we saw was the change of sales figures by loyalty is considerable.
+- Another important point declared that Beauty products are the main sale components.
+- Also sales by cities can be experienced via our Shiny app on our github page.
+
+---
+
+## Introduction to FMCG Company Sales Analysis World
+
+<p>
+The following analyses are conducted based on the <b>sales figures of an FMCG company</b>. <br />
+Data shows us details such as invoice date, sales amount,purchased item,item categories etc. <br />
+It also includes info about customer characteristics like gender, age, address, segmentation, loyalty.<br />
+Processed data is <b>31.2 MB</b>. There are approximately <b>494K rows</b> with <b>15 attributes</b>.
+</p>
+
+Data Fields: INVOICEID,   ACCOUNTNUM,   GENDER,   AGE,   LOA (loyalty indicator),   CITY,   CUSTOMER SEGMENT,    BUSINESS,   CATEGORY,    SEGMENT,   SALES,   UNIT PRICE,   QUANTITY,   FIRST ORDER,   INVOICE DATE
+
+# Analysis-Necessary Packages
+Here you may find the necessary libraries. The references are indicated on the Citations.  
+```{r message = FALSE}
+library(dplyr)                                #[1]
+library(tidyverse)                            #[2]
+library(ggplot2)                              #[3]
+library(scales)                               #[4]
+library(readxl)                               #[5]
+library(lubridate)                            #[6]
+library(treemapify)                           #[7]
+library(magrittr)                             #[8]
+```
+
+
+<b>Downloading the Data </b>
+<p>
+Excel file is downloaded from github to a local data frame (raw_data) and prepared for analysis.<br />
+Here the raw data structure can be seen in the manner of the number of variables, variable types and the number of observations.<br/>
+There are <b>15 variables</b> and <b>494.305 observations</b> to be conducted.
+</p>
+
+```{r, echo = FALSE}
+project_raw_data <- read_excel("C:\\Users\\oktay\\OneDrive\\Masaüstü\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\sales_data_v10.xlsx")
+project_raw_data$SALES <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$SALES)))
+project_raw_data$UNIT_PRICE <- as.numeric(gsub(",", ".", gsub("\\.", "", project_raw_data$UNIT_PRICE)))
+glimpse(project_raw_data)
+dim(project_raw_data)
+```
+
+# Exploratory Data Analysis
+### <b> 1. Total Sales vs Customer Segments <small> (1st Graph) </small> </b> 
+#### Beauty is more driver than the Fashion and Home. D segment is the highest for contribution to the total sales. 
+
+The first graph in following shows us the total sales for 3 business segments (Beauty, Fashion and Home). <br/>
+Accordingly, the main business category of this company is <b>'beauty'</b>, since the majority of sales come from this group. <b>'Fashion'</b> has also small share in total sales, while <b>'home'</b> share in total is negligible. 
+
+From A to J, there are <b>10 customer segments</b> in total.
+The other output out of the first graph is the  contribution amount of every single customer segment to total sales. 
+
+It is showed that, customers in <b> D segment</b> brings <b>the highest contribution</b>; while  F and J segment follow it,respectively.
+
+```{r, echo = FALSE}
+sales_by_acc_loa <- 
+  project_raw_data %>% 
+  select(ACCOUNTNUM, LOA,Customer_Segment,SALES,BUSINESS) %>%
+  group_by(ACCOUNTNUM, LOA,Customer_Segment,BUSINESS) %>% 
+  summarise(total_sales=sum(SALES))
+total_sales_by_segment_bus <- 
+  sales_by_acc_loa %>% 
+  group_by(Customer_Segment, BUSINESS) %>% 
+  summarise(total_segment_bus_sales=sum(total_sales))
+total_sales_by_segment_bus %>% 
+        ggplot(aes(x=Customer_Segment, y=total_segment_bus_sales, fill=BUSINESS )) + 
+        geom_bar(stat="identity")+
+        labs( x="Customer Segment" , y = "Total sales")+
+        ggtitle("Total sales based on Sales Representative Segment") +
+        theme(legend.position = "bottom", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 10))
+
+```
+
+---
+
+### <b> 2. Average Sales vs Customer Segments <small> (2nd Graph) </small> </b> 
+#### J segment is Atom-Ant. The highest average sales with lower sales contribution to the total sales. 
+The second graph shows the average sales for each segment. Once we compare it with the previous one, it results in the fact that, the middle segments have the higher contribution to total sales.
+
+However, <b>J segment</b>, which is <b>the premium one</b>, has the highest average sales among all. The reason is, the number of customers in this premium (J segment) is quite low. But their total sales amount is quite high. Therefore, the average sales of this <b> J segment</b>  is <b> the highest one</b>.
+
+```{r, echo = FALSE}
+avg_sales_by_segment_bus <- 
+  sales_by_acc_loa %>% 
+  group_by(Customer_Segment, BUSINESS) %>% 
+  summarise(total_segment_bus_sales=mean(total_sales))
+avg_sales_by_segment_bus %>% 
+        ggplot(aes(x=Customer_Segment, y=total_segment_bus_sales, fill=BUSINESS )) + 
+        geom_bar(stat="identity")+
+        labs( x="Customer Segment" , y = "Average Sales")+
+        ggtitle("Average sales based on Sales Representative Segment") +
+        theme(legend.position = "bottom", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 10))
+
+```
+
+---
+
+### <b> 3. Total Sales based on the City <small> (3rd Graph) </small> </b> 
+#### Everybody knows, Istanbul has huge market in Turkey. However, do not underestimate Bursa, please. Bursa is runner-up city.
+
+In the third graph, top 20 cities,based on their total sales amount are showed. <b>Istabul, Bursa</b> and <b>Izmir</b> are in top 3.
+ 
+```{r, echo = FALSE}
+sales_by_city <- 
+        project_raw_data %>% 
+        group_by(CITY) %>% 
+        summarise(total_sales=sum(SALES)) %>% 
+        arrange(desc(total_sales)) %>%
+        slice(1:20)
+sales_by_city %>% 
+                  ggplot(aes(x=reorder(CITY,total_sales), y=total_sales, fill=CITY )) + 
+                  geom_bar(stat="identity")+
+                  coord_flip()+
+                  labs( x="CITY" , y = "Total sales")+
+                  ggtitle("Total sales based on city") +
+                  theme(legend.position = "none", axis.text.x = element_text(angle = 0.0, vjust = 0.0, hjust = 0.0, size = 1))
+```
+
+---
+
+### Elections? No, just the sales figures provided by AA.
+In  the fourth graph, the sales density can be red from the map. The reddish the city is, the denser the sales are. Or can we say <b>women spending more money on beauty products? </b> 
+
+```{r, echo = FALSE}
+total <- read.csv(
+  "C:\\Users\\oktay\\OneDrive\\Masaüstü\\BDA\\Term 1\\Data Analytics Essentials\\voltRan\\final_map.csv",sep = ",",
+  colClasses=c("group"="factor"))
+
+ggplot(total)+geom_polygon( aes(x = long, y = lat, group = group, 
+                                          fill = rel_freqs),
+                                      color = "grey") +
+        coord_map() +theme_void() + labs(
+          title = "Relative Frequency Distribution of All Sales") +
+        scale_fill_distiller(name = "Frequency Table",palette = "Spectral", 
+                             limits = c(0,0.065),
+                             na.value = "red") +
+        theme(plot.title = element_text(hjust = 0.5),
+              plot.subtitle = element_text(hjust = 0.5))
+```
+
+
+
+---
+
+### <b> 4. Which Days are Popular for Sales? <small> (5th Graph) </small> </b> 
+#### The laziest day may be Saturday. Everybody loves Saturday for relaxing. 
+
+In the 5th graph, weekdays are desired to compared with respect to their sales contribution, distributon is given in a pie chart. <br />
+Saturday has slightly lower share in a week.
+
+
+```{r, echo = FALSE}
+sales_per_day <-
+        project_raw_data %>% 
+        select(INVOICE_DATE,SALES) %>%
+        mutate(INVOICE_DATE2=lubridate::as_date(ymd(INVOICE_DATE))) %>%
+        mutate(weekday=weekdays(INVOICE_DATE2)) %>%
+        group_by(weekday) %>%
+        summarise(avg_sale=mean(SALES))  %>%
+        mutate(day_order=c(5,6,3,7,1,4,2)) %>%
+        arrange(day_order)
+sales_per_day %>%
+        ggplot(aes(x=" ",y=avg_sale, fill=reorder(weekday,day_order))) + 
+        geom_bar(stat="identity")+
+        coord_polar("y",start = 0)+
+        theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank())
+```
+
+
+---
+
+### <b> 5. Which Product Category is the Most Famous? <small> (6th Graph) </small> </b> 
+#### The Oscar goes to the <b> Fragrance </b>. Fragrance is very important. If you think not, Please watch the movie "Perfume: The Story of a Murderer"
+
+There are sub- categories in each of the business units.To illustrate, <b>'beauty'</b> business category includes 5 different sub-categories; 
+such as: body, toiletries, face, fragrance, color
+
+6th graph in below shows us the share of all these sub-categories in total sales. Bigger area indicates bigger share. <br />
+Accordingly, <b> fragnance</b>  is the first, and it is followed by <b>toiletres </b>  and <b>color </b> respectively.
+
+
+```{r, echo = FALSE}
+categorized_sales <-
+  project_raw_data %>% 
+  select(CATEGORY_, SALES) %>%
+  group_by(CATEGORY_) %>%
+  summarise(SALES = sum(SALES)) 
+ggplot(categorized_sales, aes(area = SALES, fill = CATEGORY_, label = CATEGORY_)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "italic", colour = "white", place = "centre", grow = TRUE)+
+  theme(legend.position = "bottom") 
+```
+
+---
+
+##  CITIATIONS:
+[1]Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2018). dplyr:
+  A Grammar of Data Manipulation. R package version 0.7.7.<br>
+  https://CRAN.R-project.org/package=dplyr
+
+[2]Hadley Wickham (2017). tidyverse: Easily Install and Load the 'Tidyverse'. R
+  package version 1.2.1. <br>
+  https://CRAN.R-project.org/package=tidyverse
+
+[3]H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New
+  York, 2016.<br>
+  https://ggplot2.tidyverse.org/
+  
+[4]Hadley Wickham (2018). scales: Scale Functions for Visualization. R package
+  version 1.0.0. <br>
+  https://CRAN.R-project.org/package=scale
+  
+[5] Hadley Wickham and Jennifer Bryan (2018). readxl: Read Excel Files. R package
+  version 1.1.0. <br>
+  https://CRAN.R-project.org/package=readxl 
+  
+[6]Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with
+  lubridate. Journal of Statistical Software, 40(3), 1-25. <br>
+  http://www.jstatsoft.org/v40/i03/
+  
+[7]David Wilkins (2018). treemapify: Draw Treemaps in 'ggplot2'. R package
+  version 2.5.2. <br>
+  https://CRAN.R-project.org/package=treemapify
+
+[8]Stefan Milton Bache and Hadley Wickham (2014). magrittr: A Forward-Pipe
+  Operator for R. R package version 1.5. <br>
+  https://CRAN.R-project.org/package=magrittr
