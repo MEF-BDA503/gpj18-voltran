@@ -1,6 +1,6 @@
 ---
 title: "VoltRan"
-author: "Kerim Acar, Oktay Ekici, Ömer Elmasrı, Gökçe Ezeroğlu, Tarık Özçelik"
+author: "Kerim Acar, Oktay Ekici, Omer Elmasri, Gokce Ezeroglu, Tarik Ozcelik"
 date: "26.12.2018"
 output: html_document
 ---
