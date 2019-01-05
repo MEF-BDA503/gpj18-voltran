@@ -24,6 +24,6 @@ For final analysis PDF [click here](https://mef-bda503.github.io/gpj18-voltran/2
 
 For presentation [click here](https://mef-bda503.github.io/gpj18-voltran/2612EDAs.html).
 
-For Shiny Map please [click here](https://mef-bda503.github.io/gpj18-voltran/shiny/shiny_map.R).
+For Shiny Map please [click here](https://kerimacar.shinyapps.io/Project_v2/).
 
 
